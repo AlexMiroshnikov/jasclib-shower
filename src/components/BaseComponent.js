@@ -5,9 +5,9 @@ export default class BaseComponent extends Component {
     constructor(props) {
         super(props);
         this.data = [
-            {id: 1, time: 0.231},
-            {id: 2, time: 0.547},
-            {id: 3, time: 0.306},
+            {id: 1, time: 0.2},
+            {id: 2, time: 0.5},
+            {id: 3, time: 0.3},
         ];
     }
 
