@@ -15,6 +15,12 @@ export default class Output extends Component {
         this.onMeasure = this.onMeasure.bind(this);
     }
 
+    componentWillReceiveProps() {
+        if (!this.props.data) {
+            this.setState({height: null});
+        }
+    }
+
     onMeasure(input) {
         this.setState({
             height: Math.floor(input.height),
@@ -23,6 +29,10 @@ export default class Output extends Component {
     }
 
     render() {
+        if (!this.props.data) {
+            return <div className="alert alert-info">Provide input data</div>;
+        }
+
         return (
             <div className="row" style={{background: '#f3f3f3', height: (this.state.height || '100%'), minHeight: '480px'}}>
                 <div className="col-md-2">
@@ -35,31 +45,11 @@ export default class Output extends Component {
                                 data={this.props.data}
                                 height={this.state.height}
                                 width={this.state.width}
-                                valueExtractor={item => item.time}
+                                noAxisX
+                                /*valueExtractor={item => item.time}*/
                             />
                             : null
                         }
-                        {/*
-                        {function(_this){
-                            return null;
-                            try {
-                                if (!_this.state.height) {
-                                    return null;
-                                }
-
-                                const chart = <Chart
-                                    data={_this.props.data}
-                                    height={_this.state.height}
-                                    width={_this.state.width}
-                                    valueExtractor={item => item.time}
-                                />;
-
-                                return chart;
-                            } catch (e) {
-                                return <div className="alert alert-danger">{'' + e}</div>
-                            }
-                        }(this)}
-                        */}
                     </div>
                 </Measure>
             </div>

@@ -13,6 +13,7 @@ export default class Chart extends Component {
         chartId: PropTypes.string,
         height: PropTypes.number.isRequired,
         width: PropTypes.number.isRequired,
+        noAxisX: PropTypes.bool,
     };
 
     static generateChartId = () => 'Chart-' + Chart.instanceCounter;
@@ -22,26 +23,31 @@ export default class Chart extends Component {
         valueExtractor: null,
         fillColor: '#6655AA',
         chartId: Chart.generateChartId(),
+        noAxisX: false,
     };
 
     constructor(props) {
         super(props);
 
-        this.dataParams = {
-            len: this.props.data.length,
-            values: new Array(this.props.data.length),
-            multiplier: 100,    // @TODO Make dynamic
-        };
+        this.init = () => {
+            this.dataParams = {
+                len: this.props.data.length,
+                values: new Array(this.props.data.length),
+                multiplier: 100,    // @TODO Make dynamic
+            };
 
-        for (let i = 0; i < this.dataParams.len; i++) {
-            this.dataParams.values[i] = (this.props.valueExtractor ? this.props.valueExtractor(this.props.data[i]) : this.props.data[i]);
+            for (let i = 0; i < this.dataParams.len; i++) {
+                this.dataParams.values[i] = (this.props.valueExtractor ? this.props.valueExtractor(this.props.data[i]) : this.props.data[i]);
 
-            if (isNaN(this.dataParams.values[i])) {
-                throw new Error('Value must be numeric either valueExtractor(item) was not provided');
+                if (isNaN(this.dataParams.values[i])) {
+                    throw new Error('Value must be numeric either valueExtractor(item) was not provided');
+                }
             }
-        }
 
-        this.dataParams.maxValue = d3.max(this.dataParams.values);
+            this.dataParams.maxValue = d3.max(this.dataParams.values);
+            this.dataParams.mean = d3.mean(this.dataParams.values);
+            this.dataParams.median = d3.median(this.dataParams.values.slice().sort());
+        };
 
         this.makeChart = () => {
             // return false;
@@ -49,10 +55,10 @@ export default class Chart extends Component {
             const id = '#' + (this.props.chartId || Chart.generateChartId());
             // console.log(this.props.width + 'x' + this.props.height);
             d3.select(id).selectAll("*").remove();
-            const width = this.props.width - 24;
+            const width = this.props.width;
 
             const space = 1;
-            const barWidth = Math.floor((width - this.dataParams.len * space) / this.dataParams.len);
+            const barWidth = Math.max(1, Math.floor((width - this.dataParams.len * space) / this.dataParams.len));
 
             const calcHeight = val => this.props.height * (val / this.dataParams.maxValue);
 
@@ -81,7 +87,7 @@ export default class Chart extends Component {
             const yAxis = d3.axisTop().scale(yScale).ticks(this.dataParams.len);
 
             svg.append('g').attr('transform', 'translate(0, 0)').call(xAxis);
-            svg.append('g').attr('transform', 'translate(-' + barWidth / 2 + ', ' + this.props.height + ')').call(yAxis);
+            !this.props.noAxisX && svg.append('g').attr('transform', 'translate(-' + barWidth / 2 + ', ' + this.props.height + ')').call(yAxis);
         };
 
         this.timeout = null;
@@ -91,6 +97,7 @@ export default class Chart extends Component {
                 clearTimeout(this.timeout);
             }
 
+            this.init();
             this.timeout = setTimeout(() => {
                 clearTimeout(this.timeout);
                 this.timeout = null;
@@ -103,41 +110,16 @@ export default class Chart extends Component {
     }
 
     componentDidMount() {
-        // console.log('>C.didMount');
-        // return this.makeChart();
         this.redraw();
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        /*
-        console.log('>C.shouldComponentUpdate');
-        console.log(nextProps.width + ' x ' + nextProps.height);
-        console.log(this.props.width + ' x ' + this.props.height);
-        //*/
-
-        if (this.props.width !== nextProps.width) {
-            return true;
-        }
-
-        return false;
-
-        if (this.props.height <= nextProps.height) {
-            return false;
-        }
-
-        return true;
-    }
-
     componentDidUpdate() {
-        // this.makeChart();
         this.redraw();
     }
 
     render() {
-        /*
-        console.log('C.render');
-        console.log(this.props);
-        //*/
-        return <div id={this.props.chartId} className="row" />;
+        return (
+                <div id={this.props.chartId} className="row" />
+        );
     }
 }

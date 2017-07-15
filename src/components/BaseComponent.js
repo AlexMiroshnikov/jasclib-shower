@@ -1,20 +1,40 @@
 import React, {Component} from 'react';
-import Measure from 'react-measure';
 import Output from './Output';
 import Chart from './Chart';
 
 export default class BaseComponent extends Component {
     constructor(props) {
         super(props);
-        this.data = [
-            {id: 1, time: 0.2},
-            {id: 2, time: 0.5},
-            {id: 3, time: 0.3},
-        ];
+
+        this.input = null;
+        this.data = null;
+        this.processData = this.processData.bind(this);
+
+    }
+
+    processData() {
+        this.data = null;
+
+        try {
+            this.data = this.input.value.split('\n');
+            this.data = this.data.map(val => {
+                const res = parseFloat(val);
+
+                if (isNaN(res)) {
+                    throw new Error('Invalid input');
+                }
+
+                return res;
+            });
+
+        } catch (e) {
+            this.data = null;
+        }
+
+        this.forceUpdate();
     }
 
     render() {
-        const styles = require('./BaseComponent.sass');
         const bsStyles = require('bootstrap/dist/css/bootstrap.min.css');
 
         const inputStyle = [
@@ -33,33 +53,18 @@ export default class BaseComponent extends Component {
             <div className="container-fluid">
                 <div className="row">
                     <div className={inputStyle}>
-                        <h4>Input</h4>
+                        <h3>Input</h3>
                         <div className="form">
                             <div className="form-group">
                                 <label htmlFor="input">Data</label>
-                                <textarea className="form-control" id="input" rows="8"/>
+                                <textarea className="form-control" id="input" rows="8" ref={comp => this.input = comp}/>
                             </div>
-                            <button type="submit" className="btn btn-lg btn-primary btn-block">Show!</button>
+                            <button type="submit" className="btn btn-lg btn-primary btn-block" onClick={this.processData}>Show!</button>
                         </div>
                     </div>
                     <div className={outputStyle}>
-                        <h4>Output</h4>
+                        <h3>Output</h3>
                         <Output data={this.data}/>
-                    </div>
-                </div>
-            </div>
-        );
-
-        return (
-            <div className={styles.baseComponent}>
-                <div className={styles['inputArea']}>
-                    <h4>Input area here</h4>
-                    <textarea />
-                </div>
-                <div className={styles['outputArea']}>
-                    <h4>Output area here</h4>
-                    <div id="chartsContainer" className="col-l">
-                        <Chart data={this.data}/>
                     </div>
                 </div>
             </div>
