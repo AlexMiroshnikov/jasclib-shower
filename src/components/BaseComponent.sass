@@ -1,3 +1,16 @@
 .baseComponent
-  color: blue
-  background: red
+  div
+    border: solid 1px #a3a3a3
+    background: #ededed
+
+    &.inputArea
+      float: left
+
+    &.outputArea
+      margin-left: 200px
+
+  &:after
+    content: ''
+    float: none
+    clear: both
+    display: block
