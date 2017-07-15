@@ -44,26 +44,21 @@ export default class Chart extends Component {
         this.dataParams.maxValue = d3.max(this.dataParams.values);
 
         this.makeChart = () => {
+            // return false;
             console.log('>>C.makeChart');
             const id = '#' + (this.props.chartId || Chart.generateChartId());
-            console.log('id', id);
+            // console.log(this.props.width + 'x' + this.props.height);
             d3.select(id).selectAll("*").remove();
+            const width = this.props.width - 24;
 
             const space = 1;
-            const barWidth = Math.floor((this.props.width - this.dataParams.len * space) / this.dataParams.len);
+            const barWidth = Math.floor((width - this.dataParams.len * space) / this.dataParams.len);
 
-            const calcHeight = val => {
-                // console.log('val', val);
-                // console.log(this.props.height + '*'+ this.dataParams.multiplier +'*'+ '('+val+' / ' +this.dataParams.maxValue+')');
-                //const res = this.props.height * this.dataParams.multiplier * (val / this.dataParams.maxValue);
-                const res = this.props.height * 1 * (val / this.dataParams.maxValue);
-                // console.log('res', res);
-                return res;
-            };
+            const calcHeight = val => this.props.height * (val / this.dataParams.maxValue);
 
             const svg = d3.select(id)
                 .append('svg')
-                .attr('width', this.props.width + 'px')
+                .attr('width', width + 'px')
                 .attr('height', this.props.height + 'px');
 
             svg.selectAll('rect.bar').data(this.dataParams.values).enter()
@@ -76,7 +71,7 @@ export default class Chart extends Component {
 
             const yScale = d3.scaleLinear()
                 .domain([0, this.dataParams.len])
-                .range([0, this.props.width]);
+                .range([0, width]);
 
             const xScale = d3.scaleLinear()
                 .domain([this.dataParams.maxValue, 0])
@@ -89,62 +84,42 @@ export default class Chart extends Component {
             svg.append('g').attr('transform', 'translate(-' + barWidth / 2 + ', ' + this.props.height + ')').call(yAxis);
         };
 
+        this.timeout = null;
+
+        this.redraw = () => {
+            if (this.timeout) {
+                clearTimeout(this.timeout);
+            }
+
+            this.timeout = setTimeout(() => {
+                clearTimeout(this.timeout);
+                this.timeout = null;
+
+                this.makeChart();
+            }, 70);
+        };
+
         Chart.instanceCounter++;
     }
 
     componentDidMount() {
-        console.log('>C.didMount');
-        return this.makeChart();
-        /*
-        const width = 640;
-        const height = this.props.height || 200;
-        const len = this.props.data.length;
-        const space = 1;
-        const barWidth = Math.floor((width - len * space) / len);
-        const mY = 100;
-        const maxY = d3.max(this.props.data, function(d) { return Math.round(mY * d.time); });
-        const calcHeight = val => height * mY * (val / maxY);
-
-        const svg = d3.select('#chart')
-            .append('svg')
-            .attr('width', width + 'px')
-            .attr('height', height + 'px');
-
-        svg.selectAll('rect.bar').data(this.props.data).enter()
-            .append('rect')
-            .attr('width' , barWidth)
-            .attr('height' , function(d) { return calcHeight(d.time)})
-            .attr('x' , function (d, i) { return i * (barWidth + space) })
-            .attr('y' , function (d, i) { return height - calcHeight(d.time);})
-            .attr('fill', '#6655AA');
-
-        const yScale = d3.scaleLinear()
-            .domain( [0, len])
-            .range( [0, width]);
-
-        const xScale = d3.scaleLinear()
-            .domain([maxY, 0])
-            .range([0, height]);
-
-        const xAxis = d3.axisRight().scale(xScale);
-        const yAxis = d3.axisTop().scale(yScale).ticks(len);
-
-        svg.append('g').attr('transform', 'translate(0, 0)').call(xAxis);
-        svg.append('g').attr('transform', 'translate(-'+barWidth / 2+', '+height+')').call(yAxis);
-        //*/
+        // console.log('>C.didMount');
+        // return this.makeChart();
+        this.redraw();
     }
 
     shouldComponentUpdate(nextProps, nextState) {
+        /*
         console.log('>C.shouldComponentUpdate');
-        //*
-        console.log(nextProps);
-        console.log(this.props);
+        console.log(nextProps.width + ' x ' + nextProps.height);
+        console.log(this.props.width + ' x ' + this.props.height);
         //*/
-        // return false;
 
         if (this.props.width !== nextProps.width) {
             return true;
         }
+
+        return false;
 
         if (this.props.height <= nextProps.height) {
             return false;
@@ -154,12 +129,15 @@ export default class Chart extends Component {
     }
 
     componentDidUpdate() {
-        this.makeChart();
+        // this.makeChart();
+        this.redraw();
     }
 
     render() {
+        /*
         console.log('C.render');
         console.log(this.props);
-        return <div id={this.props.chartId} />;
+        //*/
+        return <div id={this.props.chartId} className="row" />;
     }
 }

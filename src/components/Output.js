@@ -24,13 +24,24 @@ export default class Output extends Component {
 
     render() {
         return (
-            <Measure onMeasure={this.onMeasure}>
-                <div className="row" style={{background: '#f3f3f3', height: '100%', minHeight: '278px'}}>
-                    <div className="col-md-2">
-                        Settings are here
-                    </div>
+            <div className="row" style={{background: '#f3f3f3', height: (this.state.height || '100%'), minHeight: '480px'}}>
+                <div className="col-md-2">
+                    Settings are here
+                </div>
+                <Measure onMeasure={this.onMeasure}>
                     <div className="col">
+                        {this.state.height ?
+                            <Chart
+                                data={this.props.data}
+                                height={this.state.height}
+                                width={this.state.width}
+                                valueExtractor={item => item.time}
+                            />
+                            : null
+                        }
+                        {/*
                         {function(_this){
+                            return null;
                             try {
                                 if (!_this.state.height) {
                                     return null;
@@ -48,9 +59,10 @@ export default class Output extends Component {
                                 return <div className="alert alert-danger">{'' + e}</div>
                             }
                         }(this)}
+                        */}
                     </div>
-                </div>
-            </Measure>
+                </Measure>
+            </div>
         );
     }
 }
