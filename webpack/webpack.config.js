@@ -10,8 +10,8 @@ const sassModulesPaths = ['src'];
 const sourceMap = false;
 const cssLoaderOptions = {
     //localIdentName: '[hash:base64]-[name]-[local]',
-    localIdentName: '[name]-[hash:base64:5]',
-    modules: true,
+    // localIdentName: '[name]-[hash:base64:5]',
+    // modules: true,
     sourceMap,
     // importLoaders: 2,
 };
@@ -31,6 +31,7 @@ module.exports = {
             },
             {
                 test: /\.css$/,
+                // exclude: /bootstrap\.min\.css$/,
                 use: [
                     'style-loader',
                     {
