@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
+const DEFAULT_DECIMAL_ROUND = 3;
+
 export default class TextOutput extends Component {
 
     static propTypes = {
@@ -10,10 +12,22 @@ export default class TextOutput extends Component {
             median: PropTypes.func.isRequired,
             max: PropTypes.func.isRequired,
             min: PropTypes.func.isRequired,
-        }).isRequired,
+        }),
+        decimalRound: PropTypes.number,
     };
 
-    shouldComponentUpdate(nextState, nextProps) {
+    static defaultProps = {
+        decimalRound: DEFAULT_DECIMAL_ROUND,
+    };
+
+    constructor(props) {
+        super(props);
+
+        const roundVal = Math.pow(10, this.props.decimalRound);
+        this.round = val => Math.round(val * roundVal) / roundVal;
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
         if (!nextProps.result && !this.props.result) {
             return false;
         }
@@ -25,6 +39,7 @@ export default class TextOutput extends Component {
         const styles = require('./TextOutput.sass');
         const {result} = this.props;
 
+
         return (
             <div className="col">
                 <h3>Output</h3>
@@ -33,11 +48,11 @@ export default class TextOutput extends Component {
                         [
                         <div key="mean" className="col-xs-6 col-sm-6 col-md-3">
                             <dt>mean</dt>
-                            <dd>{result.mean()} <small>&plusmn; {result.deviation()}</small></dd>
+                            <dd>{this.round(result.mean())} <small>&plusmn; {this.round(result.deviation())}</small></dd>
                         </div>,
                         <div key="median" className="col-xs-6 col-sm-6 col-md-2">
                             <dt>median</dt>
-                            <dd className="output-median">{result.median()}</dd>
+                            <dd className="output-median">{this.round(result.median())}</dd>
                         </div>,
                         <div key="min-max" className="col output-bounds">
                             <dt>min / max</dt>

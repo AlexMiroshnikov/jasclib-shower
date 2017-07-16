@@ -7,18 +7,27 @@ export default class ChartOutput extends Component {
     static propTypes = {
         result: PropTypes.shape({
             data: PropTypes.func.isRequired,
-        }).isRequired,
+        }),
     };
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (!nextProps.result && !this.props.result) {
+            return false;
+        }
+
+        return true;
+    }
 
     render() {
         const {result} = this.props;
+        const data = result && result.data() || null;
 
         return (
             <div className="col">
                 <h3>Chart representation</h3>
                 {result ?
                     <StyledChart
-                        data={[15, 30, 25, 50]}
+                        data={data}
                         height={480}
                         width={640}
                         noAxisX={true}
