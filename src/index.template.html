@@ -1,10 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Jasclib Shower Demo</title>
-    </head>
-    <body>
-        <div id="root"></div>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jasclib Shower Demo</title>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/javascript">
+    function downloadJSAtOnload() {
+        var element = document.createElement("script");
+        element.src = "bundle.js";
+        document.body.appendChild(element);
+    }
+    if (window.addEventListener)
+        window.addEventListener("load", downloadJSAtOnload, false);
+    else if (window.attachEvent)
+        window.attachEvent("onload", downloadJSAtOnload);
+    else window.onload = downloadJSAtOnload;
+</script>
+</body>
 </html>
