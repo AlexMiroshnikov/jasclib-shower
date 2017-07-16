@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import Output from './Output';
-import Chart from './Chart';
+import Output from '../Output';
+import Chart from '../Chart';
 
 export default class BaseComponent extends Component {
     constructor(props) {
@@ -122,26 +122,3 @@ export default class BaseComponent extends Component {
         );
     }
 }
-
-/*
-<div className="row">
-    <div className="col-sm-12">
-        <div style={{background: 'red'}}>Div</div>
-        {/*<Chart data={this.data}/>* /}
-        {/*
-         <div className="form-inline">
-         <div className="form-check">
-         <label className="form-check-label">
-         <input className="form-check-input" type="checkbox" /> Show avg
-         </label>
-         </div>
-         <div className="form-check">
-         <label className="form-check-label">
-         <input className="form-check-input" type="checkbox" /> Show median
-         </label>
-         </div>
-         </div>
-         /** /}
-    </div>
-</div>
-//*/
