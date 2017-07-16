@@ -1,21 +1,33 @@
 import React, {Component} from 'react';
+import Measure from 'react-measure';
 
-import Navigation from '../Navigation/Navigation';
-import Input from "../Input/Input";
-import TextOutput from "../Outputs/TextOutput";
-import ChartOutput from "../Outputs/ChartOutput";
+import {
+    Navigation,
+    Input,
+    TextOutput,
+    ChartOutput,
+} from '../';
+
 import Research from '../../utils/Research';
+
+const HEIGHT_OFFSET = 300;
 
 export default class Prototype extends Component {
     constructor(props) {
         super(props);
+
         this.state = {
             result: null,
+            chartDimensions: {
+                width: null,
+                height: null,
+            },
         };
 
-        this.refInput = comp => {
-            console.log('comp');
-            console.log(comp);
+        this.dimensions = {
+            textAreaHeight: 0,
+            chartAreaWidth: 0,
+            chartAreaHeight: 0,
         };
 
         this.onSubmit = sanitizedInput => {
@@ -29,6 +41,25 @@ export default class Prototype extends Component {
 
             this.setState({result});
         };
+
+        this.onTextAreaMeasured = this.onTextAreaMeasured.bind(this);
+        this.onChartAreaMeasured = this.onChartAreaMeasured.bind(this);
+    }
+
+    onTextAreaMeasured(dimensions) {
+        this.dimensions.textAreaHeight = dimensions.height;
+    }
+
+    onChartAreaMeasured(dimensions) {
+        this.dimensions.chartAreaWidth = dimensions.width;
+        this.dimensions.chartAreaHeight = window.outerHeight - this.dimensions.textAreaHeight - HEIGHT_OFFSET;
+
+        this.setState({
+            chartDimensions: {
+                width: this.dimensions.chartAreaWidth,
+                height: this.dimensions.chartAreaHeight,
+            },
+        });
     }
 
     render() {
@@ -40,13 +71,17 @@ export default class Prototype extends Component {
                 <Navigation/>
 
                 <div className="container">
-                    <div className="row">
-                        <Input ref={this.refInput} onSubmit={this.onSubmit}/>
-                        <TextOutput result={this.state.result}/>
-                    </div>
-                    <div className="row">
-                        <ChartOutput result={this.state.result}/>
-                    </div>
+                    <Measure onMeasure={this.onTextAreaMeasured}>
+                        <div className="row">
+                            <Input onSubmit={this.onSubmit}/>
+                            <TextOutput result={this.state.result}/>
+                        </div>
+                    </Measure>
+                    <Measure onMeasure={this.onChartAreaMeasured}>
+                        <div className="row">
+                            <ChartOutput result={this.state.result} chartDimensions={this.state.chartDimensions}/>
+                        </div>
+                    </Measure>
                 </div>
             </div>
         );

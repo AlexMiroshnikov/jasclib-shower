@@ -12,8 +12,10 @@ export default class Input extends Component {
         parse: rawInput => {
             let vals = rawInput.split('\n');
             vals = vals.map(val => val.replace(/^[ \s\t\r\n]*(.*)[ \s\t\r\n]*$/, '$1'));
-            // vals = vals.map(val => parseFloat(val));
+            // vals = vals.map(val
+            // => parseFloat(val));
             // vals = vals.filter(val => !isNaN(val));
+            vals = vals.filter(val => val !== '');
             return vals;
         },
     };
@@ -50,7 +52,7 @@ export default class Input extends Component {
         ].join(' ');
 
         return (
-            <div className="col-md-3 col-sm-12 input">
+            <div className="col-md-3 col-sm-12 input mt">
                 <h3>Input</h3>
                 <div className="form">
                     <div className="form-group">

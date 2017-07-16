@@ -8,9 +8,19 @@ export default class ChartOutput extends Component {
         result: PropTypes.shape({
             data: PropTypes.func.isRequired,
         }),
+        chartDimensions: PropTypes.shape({
+            width: PropTypes.number,
+            height: PropTypes.number,
+        }),
     };
 
-    shouldComponentUpdate(nextProps, nextState) {
+    constructor(props) {
+        super(props);
+
+        this.height = null;
+    }
+
+    shouldComponentUpdate(nextProps) {
         if (!nextProps.result && !this.props.result) {
             return false;
         }
@@ -18,18 +28,24 @@ export default class ChartOutput extends Component {
         return true;
     }
 
+    componentWillReceiveProps(props) {
+        if (this.height === null && props.result) {
+            this.height = props.chartDimensions.height; // @TODO Make height more dynamic
+        }
+    }
+
     render() {
         const {result} = this.props;
         const data = result && result.data() || null;
 
         return (
-            <div className="col">
+            <div className="col mt">
                 <h3>Chart representation</h3>
                 {result ?
                     <StyledChart
                         data={data}
-                        height={480}
-                        width={640}
+                        height={this.height}
+                        width={this.props.chartDimensions.width}
                         noAxisX={true}
                     />
                     :

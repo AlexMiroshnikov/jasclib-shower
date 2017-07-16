@@ -33,7 +33,6 @@ export default class StyledChart extends Component {
             this.dataParams = {
                 len: this.props.data.length,
                 values: new Array(this.props.data.length),
-                // multiplier: 100,    // @TODO Make dynamic
             };
 
             for (let i = 0; i < this.dataParams.len; i++) {
@@ -50,9 +49,6 @@ export default class StyledChart extends Component {
         };
 
         this.makeChart = () => {
-            // return false;
-            console.log('>>C.makeChart');
-
             const margin = {
                 top: 12,
                 right: 0,
@@ -126,9 +122,11 @@ export default class StyledChart extends Component {
         StyledChart.instanceCounter++;
     }
 
+    /*
     componentDidMount() {
-        this.redraw();
+        // this.redraw();
     }
+    //*/
 
     componentDidUpdate() {
         this.redraw();

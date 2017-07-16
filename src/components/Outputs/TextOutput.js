@@ -27,7 +27,7 @@ export default class TextOutput extends Component {
         this.round = val => Math.round(val * roundVal) / roundVal;
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
+    shouldComponentUpdate(nextProps) {
         if (!nextProps.result && !this.props.result) {
             return false;
         }
@@ -39,9 +39,8 @@ export default class TextOutput extends Component {
         const styles = require('./TextOutput.sass');
         const {result} = this.props;
 
-
         return (
-            <div className="col">
+            <div className="col mt">
                 <h3>Output</h3>
                 <div className="row output">
                     {result ?
